@@ -45,7 +45,7 @@ app.use(errorHandler);
 // ─── Start ────────────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`\nServer running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\nServer running on port ${PORT}`);
   console.log(`Health: http://localhost:${PORT}/api/health\n`);
 });
