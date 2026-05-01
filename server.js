@@ -15,12 +15,12 @@ const app = express();
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 app.use(cors({
-  // Allow localhost dev + any production domain you set in CLIENT_URL
   origin: [
     'http://localhost:3000',
     'http://localhost:3001',
-    process.env.CLIENT_URL,
-  ].filter(Boolean),
+    'https://zenvyshop-next-uz3y-diq7obwu6-shahmirbutt01-9635s-projects.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
 
