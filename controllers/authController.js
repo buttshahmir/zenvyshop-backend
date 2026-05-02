@@ -2,9 +2,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Helper — creates a JWT for a user id
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+// Helper — creates a JWT with id AND role
+const generateToken = (id, role) => {
+  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 };
@@ -17,20 +17,17 @@ const register = async (req, res) => {
     return res.status(400).json({ message: 'Please provide name, email, and password.' });
   }
 
-  // Check if email already used
   const existing = await User.findOne({ email });
   if (existing) {
     return res.status(400).json({ message: 'An account with this email already exists.' });
   }
 
-  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
-
   const user = await User.create({ name, email, password: hashedPassword });
 
   res.status(201).json({
     message: 'Account created successfully.',
-    token: generateToken(user._id),
+    token: generateToken(user._id, user.role),
     user: {
       _id: user._id,
       name: user.name,
@@ -48,7 +45,6 @@ const login = async (req, res) => {
     return res.status(400).json({ message: 'Please provide email and password.' });
   }
 
-  // Find user (include password field for comparison)
   const user = await User.findOne({ email });
   if (!user) {
     return res.status(401).json({ message: 'Invalid email or password.' });
@@ -61,7 +57,7 @@ const login = async (req, res) => {
 
   res.json({
     message: 'Login successful.',
-    token: generateToken(user._id),
+    token: generateToken(user._id, user.role),
     user: {
       _id: user._id,
       name: user.name,
@@ -73,7 +69,6 @@ const login = async (req, res) => {
 
 // GET /api/auth/me  (protected)
 const getMe = async (req, res) => {
-  // req.user is set by the protect middleware
   res.json({ user: req.user });
 };
 
