@@ -15,12 +15,19 @@ const app = express();
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://zenvyshop-next-uz3y-diq7obwu6-shahmirbutt01-9635s-projects.vercel.app'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: function (origin, callback) {
+    // Allow localhost + any vercel.app URL
+    if (
+      !origin ||
+      origin.includes('localhost') ||
+      origin.includes('vercel.app')
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   credentials: true,
 }));
 
