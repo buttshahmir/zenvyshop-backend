@@ -2,9 +2,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Helper — creates a JWT with id AND role
-const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+// Helper — creates a JWT with id, role AND name
+const generateToken = (id, role, name) => {
+  return jwt.sign({ id, role, name }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 };
@@ -27,7 +27,7 @@ const register = async (req, res) => {
 
   res.status(201).json({
     message: 'Account created successfully.',
-    token: generateToken(user._id, user.role),
+    token: generateToken(user._id, user.role, user.name), // ✅ name added
     user: {
       _id: user._id,
       name: user.name,
@@ -57,7 +57,7 @@ const login = async (req, res) => {
 
   res.json({
     message: 'Login successful.',
-    token: generateToken(user._id, user.role),
+    token: generateToken(user._id, user.role, user.name), // ✅ name added
     user: {
       _id: user._id,
       name: user.name,
